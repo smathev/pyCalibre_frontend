@@ -1,0 +1,135 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Authors
+{% endblock %}
+
+{% block content %}
+    <main role="main" class="main-content px-4">
+        <div class="container mt-5">
+            <h1 class="mb-4">Authors</h1>
+            <table class="table table-striped table-hover table-responsive table-bordered" id="dataTable">
+                <thead class="bg-light sticky-top">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Birthday</th>
+                        <th scope="col">Amount of Books</th>
+                        <th scope="col">Last Updated</th>
+                        <th scope="col">Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Authors skeleton loaders -->
+                    <tr id="authors-skeleton">
+                        <td><p class="placeholder-glow"><span class="placeholder col-12"></span></p></td>
+                        <td><p class="placeholder-glow"><span class="placeholder col-12"></span></p></td>
+                        <td><p class="placeholder-glow"><span class="placeholder col-12"></span></p></td>
+                        <td><p class="placeholder-glow"><span class="placeholder col-12"></span></p></td>
+                        <td><p class="placeholder-glow"><span class="placeholder col-12"></span></p></td>
+                        <td><p class="placeholder-glow"><span class="placeholder col-12"></span></p></td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- Placeholder for the input field -->
+            <div id="input-container"></div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Function to fetch authors data
+        function fetchAuthorsData() {
+            $.ajax({
+                url: 'http://127.0.0.1:8000/authors/serve_authors',
+                method: 'GET',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        populateTable(response.data);
+                        insertInputField(); // Insert input field after populating the table
+                    } else {
+                        console.error('Error fetching authors:', response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching authors:', error);
+                }
+            });
+        }
+
+        // Function to populate table with authors data
+        function populateTable(authors) {
+            const tbody = $('#dataTable tbody');
+            tbody.empty(); // Clear existing rows
+
+            authors.forEach(function(author) {
+                const row = $('<tr></tr>');
+                row.append('<td>' + author.id + '</td>');
+                row.append('<td>' + author.name + '</td>');
+                row.append('<td>' + (author.birthday || '') + '</td>'); // Handle possible null values
+                row.append('<td>' + author.num_books + '</td>');
+                row.append('<td>' + author.date_updated + '</td>');
+                row.append('<td>' + author.date_added + '</td>');
+
+                tbody.append(row);
+            });
+
+            $('#authors-skeleton').hide();  // Hide skeleton loaders
+            $('#dataTable').show();  // Show authors data table
+        }
+
+        // Function to insert input field for creating a new author
+        function insertInputField() {
+            const inputHtml = '<input type="text" id="search-authors" class="form-control mt-3" placeholder="Find author">';
+            $('#input-container').html(inputHtml);
+
+            // Attach event listener to the input field for key press events
+            $('#search-authors').on('keypress', handleKeyPress);
+        }
+
+        // Function to create a new author
+        function createNewAuthor(authorName) {
+            $.ajax({
+                url: 'http://127.0.0.1:8000/authors/create_new_author',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ author_name: authorName }),
+                success: function(response) {
+                    if (response.status === 'success') {
+                        console.log('Author created:', response.message);
+                        fetchAuthorsData();  // Refresh the authors list
+                    } else {
+                        console.error('Error creating author:', response.message);
+                        alert('Failed to create author: ' + response.message);  // Display error message to the user
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error creating author:', error);
+                    try {
+                        var responseJson = JSON.parse(xhr.responseText);
+                        alert('Failed to create author: ' + responseJson.message);  // Display error message to the user
+                    } catch (e) {
+                        alert('Failed to create author: ' + xhr.responseText);  // Display raw response if parsing fails
+                    }
+                }
+            });
+        }
+
+        // Function to handle input field key press event
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') { // Check if the pressed key is 'Enter'
+                var inputValue = event.target.value.trim(); // Get the value of the input field and remove leading/trailing whitespace
+                if (inputValue !== '') { // Check if the input value is not empty
+                    createNewAuthor(inputValue); // Call the createNewAuthor function with the input value
+                    event.target.value = ''; // Clear the input field after creating the author
+                }
+            }
+        }
+
+        // Fetch authors data on page load
+        fetchAuthorsData();
+    });
+</script>
+{% endblock %}

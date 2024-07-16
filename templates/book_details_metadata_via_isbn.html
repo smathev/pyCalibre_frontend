@@ -1,0 +1,98 @@
+<!-- book_details_metadata_via_isbn.html-->
+
+<div class="modal fade" id="metadata-modal" tabindex="-1" role="dialog" aria-labelledby="metadataModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="metadataModalLabel">ISBN Metadata</h5>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Metadata Field</th>
+              <th style="width: 50%;">Existing Data</th>
+              <th style="width: 50%;">New Data</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Title</td>
+              <td id="existing-title" style="width: 50%;"></td>
+              <td style="width: 50%;">
+                  <div class="row">
+                    <div class="col">
+                      <input type="text" class="form-control" id="metadata-title">
+                    </div>
+                    <div class="col-auto">
+                      <input type="checkbox" id="metadata-title-checkbox">
+                    </div>
+                  </div>
+                </td>
+            </tr>
+            <tr>
+              <td>Author</td>
+              <td id="existing-author"></td>
+              <td>
+                <div class="row">
+                  <div class="col">
+                    <input type="text" class="form-control" id="metadata-author">
+                  </div>
+                  <div class="col-auto">
+                    <input type="checkbox" id="metadata-author-checkbox">
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Genre</td>
+              <td id="existing-genre"></td>
+              <td>
+                <div class="row">
+                  <div class="col">
+                    <input type="text" class="form-control" id="metadata-genre">
+                  </div>
+                  <div class="col-auto">
+                    <input type="checkbox" id="metadata-genre-checkbox">
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Description</td>
+              <td id="existing-description"></td>
+              <td>
+                <div class="row">
+                  <div class="col">
+                    <textarea class="form-control" id="metadata-description"></textarea>
+                  </div>
+                  <div class="col-auto">
+                    <input type="checkbox" id="metadata-description-checkbox">
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <td>ISBN</td>
+            <td id="existing-isbn"></td>
+            <td>
+              <div class="row">
+                <div class="col">
+                  <input type="text" class="form-control" id="metadata-isbn">
+                </div>
+                <div class="col-auto">
+                  <input type="checkbox" id="metadata-isbn-checkbox">
+                </div>
+              </div>
+            </td>
+          </tr>
+            <!-- Add more rows for other metadata fields if needed -->
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button id="save-isbn-metadata-button" type="button" class="btn btn-success">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>

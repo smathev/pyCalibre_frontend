@@ -1,0 +1,70 @@
+<!-- kobo_setup.html -->
+
+{% extends "layout.html" %}
+
+{% block title %}
+    Kobo Setup
+{% endblock %}
+
+{% block content %}
+    <main role="main" class="main-content px-4">
+        <div class="container mt-5">
+            <h1 class="mb-4">Kobo Setup</h1>
+            <div id="content" class="alert alert-info" role="alert">
+                <p>Fetching auth token...</p>
+            </div>
+            <p id="error" class="text-danger"></p>
+        </div>
+    </main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function getAuthToken(userId) {
+        const url = `http://127.0.0.1:8000/kobo/generate_auth_token/${userId}`;
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer your_token_here'  // Replace with your actual token if needed
+                },
+                body: JSON.stringify({})
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const authToken = data.auth_token;
+            const warning = data.warning;
+
+            const contentDiv = document.getElementById("content");
+
+            if (!warning) {
+                contentDiv.innerHTML = `
+                    <p class="mb-2">Open the <code>.kobo/Kobo/Kobo eReader.conf</code> file in a text editor and add (or edit):</p>
+                    <p><code>api_endpoint=http://127.0.0.1:8000/kobo/top_level_endpoint?auth_token=${authToken}</code></p>
+                `;
+                contentDiv.className = 'alert alert-success';  // Update class to success alert
+            } else {
+                contentDiv.innerHTML = `
+                    <p class="mb-2">${warning}</p>
+                    <p><strong>Kobo Token:</strong> ${authToken}</p>
+                `;
+                contentDiv.className = 'alert alert-warning';  // Update class to warning alert
+            }
+        } catch (error) {
+            console.error('Error fetching auth token:', error);
+            document.getElementById("error").textContent = "An error occurred while fetching the auth token.";
+        }
+    }
+
+    // Execute the function when the page loads
+    window.onload = function() {
+        const userId = "{{ user_id }}";
+        getAuthToken(userId);
+    };
+</script>
+{% endblock %}

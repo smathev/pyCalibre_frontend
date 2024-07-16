@@ -1,0 +1,161 @@
+<!-- shelves.html -->
+
+{% extends "layout.html" %}
+
+{% block title %}
+    Shelves
+{% endblock %}
+
+{% block content %}
+    <main role="main" class="main-content px-4">
+        <div class="container mt-5">
+            <h1 class="mb-4">Shelves</h1>
+            <table class="table table-striped table-hover table-responsive table-bordered" id="dataTable">
+                <thead class="bg-light sticky-top">
+                    <tr>
+                        <th scope="col">id</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Kobo sync enabled</th>
+                        <th scope="col">Last updated</th>
+                        <th scope="col">Created</th>
+                        <th scope="col">Amount of books</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Shelves skeleton loaders -->
+                    <tr id="shelves-skeleton">
+                        <td><p class="placeholder-glow"><span class="placeholder col-12"></span></p></td>
+                        <td><p class="placeholder-glow"><span class="placeholder col-12"></span></p></td>
+                        <td><p class="placeholder-glow"><span class="placeholder col-12"></span></p></td>
+                        <td><p class="placeholder-glow"><span class="placeholder col-12"></span></p></td>
+                        <td><p class="placeholder-glow"><span class="placeholder col-12"></span></p></td>
+                        <td><p class="placeholder-glow"><span class="placeholder col-12"></span></p></td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- Placeholder for the input field -->
+            <div id="input-container"></div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Function to fetch shelves data
+        function fetchShelvesData() {
+            $.ajax({
+                url: 'http://127.0.0.1:8000/shelves/serve_shelves/',
+                method: 'GET',
+                success: function(data) {
+                    console.log(data)
+                    populateTable(data);
+                    insertInputField(); // Insert input field after populating the table
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching shelves:', error);
+                }
+            });
+        }
+
+        // Function to populate table with shelves data
+        function populateTable(data) {
+            const tbody = $('#dataTable tbody');
+            tbody.empty(); // Clear existing rows
+
+            data.forEach(function(shelf) {
+                const row = $('<tr></tr>');
+                row.append('<td>' + shelf.id + '</td>');
+                row.append('<td>' + shelf.shelf_name + '</td>');
+                
+                // Display checkbox based on kobo_should_sync value
+                const checked = shelf.kobo_should_sync == 1 ? 'checked' : '';
+                const checkboxHtml = '<input type="checkbox" class="sync-checkbox" ' + checked + ' data-shelf-id="' + shelf.id + '">';
+                row.append('<td>' + checkboxHtml + '</td>');
+                
+                row.append('<td>' + shelf.date_updated + '</td>');
+                row.append('<td>' + shelf.date_added + '</td>');
+                row.append('<td>' + shelf.num_books + '</td>');
+                tbody.append(row);
+            });
+
+            $('#shelves-skeleton').hide();  // Hide skeleton loaders
+            $('#dataTable').show();  // Show shelves data table
+        }
+
+        // Function to insert input field for creating a new shelf
+        function insertInputField() {
+            const inputHtml = '<input type="text" id="search-shelves" class="form-control mt-3" placeholder="Create new shelf">';
+            $('#input-container').html(inputHtml);
+
+            // Attach event listener to the input field for key press events
+            $('#search-shelves').on('keypress', handleKeyPress);
+        }
+
+        // Function to create a new shelf
+        function createNewShelf(shelfName) {
+            $.ajax({
+                url: 'http://127.0.0.1:8000/shelves/create_new_shelf',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ shelf_name: shelfName }),
+                success: function(response) {
+                    if (response.shelf_uuid) {
+                        console.log('Shelf created:', response.message);
+                        fetchShelvesData();  // Refresh the shelf list
+                    } else {
+                        console.error('Error creating shelf:', response.error);
+                        alert('Failed to create shelf: ' + response.error);  // Display error message to the user
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error creating shelf:', error);
+                    try {
+                        var responseJson = JSON.parse(xhr.responseText);
+                        alert('Failed to create shelf: ' + responseJson.error);  // Display error message to the user
+                    } catch (e) {
+                        alert('Failed to create shelf: ' + xhr.responseText);  // Display raw response if parsing fails
+                    }
+                }
+            });
+        }
+        // Handle click event on checkboxes
+        $(document).on('click', '.sync-checkbox', function() {
+        const shelfId = $(this).data('shelf-id');
+        const isChecked = $(this).prop('checked');
+
+        // Log the data being sent
+        console.log(`Sending data: shelfId=${shelfId}, should_sync=${isChecked}`);
+
+        // Make AJAX call to set_sync_status_for_shelf endpoint
+        $.ajax({
+            url: 'http://127.0.0.1:8000/shelves/set_sync_status_for_shelf/' + shelfId,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ should_sync: isChecked }),
+            success: function(response) {
+                console.log('Shelf sync status updated successfully:', response);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error updating shelf sync status:', error);
+                console.error('Response:', xhr.responseText);
+            }
+        });
+    });
+        // Function to handle input field key press event
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') { // Check if the pressed key is 'Enter'
+                var inputValue = event.target.value.trim(); // Get the value of the input field and remove leading/trailing whitespace
+                if (inputValue !== '') { // Check if the input value is not empty
+                    createNewShelf(inputValue); // Call the createNewShelf function with the input value
+                    event.target.value = ''; // Clear the input field after creating the shelf
+                }
+            }
+        }
+
+        // Fetch shelves data on page load
+        fetchShelvesData();
+
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,16 @@
+2024-06-30 20:41:52, INFO, filename: app, message: port from config.py: 
+2024-06-30 20:41:52, INFO, filename: app, message: Starting on port: 5656, when running VSCODE, due to launch.json VSCODE
+2024-06-30 20:41:52, DEBUG, filename: logging, message: Using selector: EpollSelector
+2024-06-30 20:41:52, INFO, filename: logging, message: Running on http://0.0.0.0:5656 (CTRL + C to quit)
+2024-06-30 20:51:48, INFO, filename: routes.shelves_index, message: Loading shelves page
+2024-06-30 20:51:49, INFO, filename: routes.shelves_index, message: Loading shelves page
+2024-06-30 20:51:50, INFO, filename: routes.authors_index, message: Loading shelves page
+2024-06-30 20:55:11, INFO, filename: routes.shelves_index, message: Loading shelves page
+2024-06-30 20:55:17, INFO, filename: routes.shelves_index, message: Loading shelves page
+2024-06-30 20:55:17, INFO, filename: routes.authors_index, message: Loading shelves page
+2024-06-30 20:55:20, INFO, filename: routes.shelves_index, message: Loading shelves page
+2024-06-30 20:55:28, INFO, filename: routes.shelves_index, message: Loading shelves page
+2024-07-01 20:13:10, INFO, filename: app, message: port from config.py: 
+2024-07-01 20:13:10, INFO, filename: app, message: Starting on port: 5656, when running VSCODE, due to launch.json VSCODE
+2024-07-01 20:13:10, DEBUG, filename: logging, message: Using selector: EpollSelector
+2024-07-01 20:13:10, INFO, filename: logging, message: Running on http://0.0.0.0:8000 (CTRL + C to quit)

@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Book Details
+{% endblock %}
+
+{% block content %}
+
+<main role="main" class="main-content px-4">
+    <!-- Content goes here -->
+    <div class="container mt-5">
+        <h1 class="mb-4">Details</h1>
+        <div class="row">
+            <div class="col-md-9">
+                <div class="card bg-dark text-white">
+                    <div class="card-body">
+                        <div class="row align-items-center justify-content-center"> <!-- Centering the spinner -->
+                            <div class="col-md-4 text-center">
+                                <a href="#" id="cover-link">
+                                    <div id="spinner-container">
+                                        <div class="spinner-border text-light" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div id="book-details" class="d-none"> <!-- Hidden by default -->
+                            <div class="row align-items-center">
+                                <div class="col-md-4">
+                                    <div id="image-container" style="max-width: 70%;">
+                                        <a href="#" id="cover-trigger">
+                                            <img id="book-cover" src="" alt="Cover Image" class="img-fluid skeleton-loader">
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <h2 class="card-title">Title: <span id="book-title-display"></span><input type="text" id="book-title" class="form-control d-none"></h2>
+                                    <h3 class="card-subtitle mb-2">Author: <span id="book-author-display"></span><input type="text" id="book-author-input" class="form-control d-none"></h3>
+                                    <div id="author-suggestions-container" class="mt-3"></div>
+                                    <div id="authors-table-container" class=""></div>
+                                    <p class="card-text">ISBN: <span id="book-isbn-display"></span><input type="text" id="book-isbn" class="form-control d-none"></p>
+                                    <p class="card-text">Genre: <span id="book-genre-display"></span><input type="text" id="book-genre" class="form-control d-none"></p>
+                                    <p class="card-text">Description: <span id="book-description-display"></span><textarea id="book-description" class="form-control d-none" rows="6"></textarea></p>
+                                    <div class="row">
+                                        <div class="col-md-7"> <!-- Adjust the width to take 75% of the container -->
+                                            <p class="card-text-input-header d-none">Series: <input type="text" id="book-series-input-field" class="form-control d-none"></p>
+                                        </div>
+                                        <div class="col-md-2"> <!-- Adjust the width to take 25% of the container -->
+                                            <p class="card-text-input-header d-none">Number: <input type="text" id="book-number_in_series" class="form-control d-none"></p>
+                                        </div>
+                                    </div>
+                                    <div id="series-container" class="mt-3"></div>
+                                    <div class="mt-3">
+                                        <button id="edit-button" class="btn btn-primary">Edit</button>
+                                        <button id="save-button" class="btn btn-success d-none">Save</button>
+                                        <button id="cancel-button" class="btn btn-secondary d-none">Cancel</button>
+                                        <button id="fetch-isbn-metadata" class="btn btn-info disabled">Fetch ISBN Metadata</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Shelves Column -->
+            <div class="col-md-3">
+                <h2>Shelves</h2>
+                <ul id="shelves-list">
+                    {% for shelf in shelves %}
+                        <li>{{ shelf }}</li>
+                    {% endfor %}
+                </ul>
+                <input type="text" id="search-shelves" class="form-control mt-3" placeholder="Create new shelf">
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% include 'book_details_metadata_via_isbn.html' %}
+{% include 'image_upload_modal.html' %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.2/min/dropzone.min.js"></script>
+<script type="text/javascript" data-id="{{ id }}"></script>
+<script src="/static/js/bookDetails/mainLoader_bookDetails.js"></script>
+{% endblock %}

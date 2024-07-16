@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Selection</title>
+    <style>
+        .image-container {
+            margin-bottom: 20px;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Image Selection</h1>
+
+    <div id="image-results">
+        <!-- Images will be dynamically inserted here -->
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Function to fetch and display image search results
+            function fetchImageResults() {
+                var title = "{{ title }}"; // Get the book title from the Quart route
+                var author = "{{ author }}"; // Get the book author from the Quart route
+                var query = title + " " + author + " book cover";
+
+                // Ajax request to fetch Google image search results
+                $.ajax({
+                    url: '/image_search', // URL to your Quart image search route
+                    type: 'GET',
+                    data: {
+                        query: query,
+                        num_results: 5 // Fetch only the first 5 results
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        displayImageResults(data); // Display the fetched image results
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching image search results:', error);
+                    }
+                });
+            }
+
+            // Function to display image search results
+            function displayImageResults(results) {
+                var imageResultsDiv = $('#image-results');
+
+                // Clear any existing results
+                imageResultsDiv.empty();
+
+                // Iterate over each image result and append it to the container
+                results.forEach(function (imageUrl) {
+                    var imageContainer = $('<div class="image-container"></div>');
+                    var image = $('<img src="' + imageUrl + '" alt="Book Cover">');
+                    imageContainer.append(image);
+                    imageResultsDiv.append(imageContainer);
+                });
+            }
+
+            // Fetch and display image search results on page load
+            fetchImageResults();
+        });
+    </script>
+</body>
+
+</html>
+

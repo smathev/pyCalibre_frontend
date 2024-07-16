@@ -1,0 +1,262 @@
+<!-- user.html -->
+
+{% extends "layout.html" %}
+
+{% block title %}
+    User Settings
+{% endblock %}
+
+{% block content %}
+    <main role="main" class="main-content px-4">
+        <div class="container mt-5">
+            <h1 class="mb-4">User Settings</h1>
+
+            <!-- Update User Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    Update User Information
+                </div>
+                <div class="card-body">
+                    <form id="user-form">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role</label>
+                            <select class="form-control" id="role" name="role" required>
+                                <option value="USER">User</option>
+                                <option value="ADMIN">Admin</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="kindle_mail" class="form-label">Kindle Mail</label>
+                            <input type="email" class="form-control" id="kindle_mail" name="kindle_mail">
+                        </div>
+                        <div class="mb-3">
+                            <label for="locale" class="form-label">Locale</label>
+                            <input type="text" class="form-control" id="locale" name="locale" maxlength="2">
+                        </div>
+                        <div class="mb-3">
+                            <label for="sidebar_view" class="form-label">Sidebar View</label>
+                            <input type="number" class="form-control" id="sidebar_view" name="sidebar_view" min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="default_language" class="form-label">Default Language</label>
+                            <input type="text" class="form-control" id="default_language" name="default_language" maxlength="3">
+                        </div>
+                        <div class="mb-3">
+                            <label for="denied_tags" class="form-label">Denied Tags</label>
+                            <input type="text" class="form-control" id="denied_tags" name="denied_tags">
+                        </div>
+                        <div class="mb-3">
+                            <label for="allowed_tags" class="form-label">Allowed Tags</label>
+                            <input type="text" class="form-control" id="allowed_tags" name="allowed_tags">
+                        </div>
+                        <div class="mb-3">
+                            <label for="denied_column_value" class="form-label">Denied Column Value</label>
+                            <input type="text" class="form-control" id="denied_column_value" name="denied_column_value">
+                        </div>
+                        <div class="mb-3">
+                            <label for="allowed_column_value" class="form-label">Allowed Column Value</label>
+                            <input type="text" class="form-control" id="allowed_column_value" name="allowed_column_value">
+                        </div>
+                        <div class="mb-3">
+                            <label for="view_settings" class="form-label">View Settings</label>
+                            <textarea class="form-control" id="view_settings" name="view_settings" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="kobo_only_shelves_sync" class="form-label">Kobo Only Shelves Sync</label>
+                            <input type="number" class="form-control" id="kobo_only_shelves_sync" name="kobo_only_shelves_sync" min="0" max="1">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Fetch Kobo Auth Token -->
+            <div class="card">
+                <div class="card-header">
+                    Kobo Authentication Token
+                </div>
+                <div class="card-body">
+                    <div id="token-content" class="alert alert-info" role="alert">
+                        <p>Loading...</p>
+                    </div>
+                    <div id="token-actions" class="mt-3"></div>
+                    <p id="token-error" class="text-danger"></p>
+                </div>
+            </div>
+            
+            <!-- Verification Modal -->
+            <div class="modal fade" id="verificationModal" tabindex="-1" role="dialog" aria-labelledby="verificationModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="verificationModalLabel">Warning</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" id="verificationMessage">
+                            Are you sure you want to proceed?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" id="confirmButton">Confirm</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+{% endblock %}
+
+{% block scripts %}
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', async function() {
+                    const userId = "{{ user_id }}"; // Replace with actual user ID as needed
+                    await fetchCurrentToken(userId);
+                });
+            
+                async function fetchCurrentToken(userId) {
+                    const url = `http://127.0.0.1:8000/kobo/get_auth_token/${userId}`;
+                    try {
+                        const response = await fetch(url);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+            
+                        const data = await response.json();
+                        const tokenContentDiv = document.getElementById("token-content");
+                        const tokenActionsDiv = document.getElementById("token-actions");
+            
+                        if (data.status === "OK" && data.data && data.data.auth_token) {
+                            const authToken = data.data.auth_token;
+                            tokenContentDiv.innerHTML = `
+                                <p><strong>Current Kobo Token:</strong> ${authToken}</p>
+                            `;
+                            tokenContentDiv.className = 'alert alert-info';
+            
+                            tokenActionsDiv.innerHTML = `
+                                <button id="generate-new-token" class="btn btn-warning">Generate New Token</button>
+                                <button id="delete-token" class="btn btn-danger">Delete Token</button>
+                            `;
+            
+                            document.getElementById('generate-new-token').addEventListener('click', function() {
+                                showVerificationPopup('Are you sure you want to generate a new token?', generateNewToken, userId);
+                            });
+            
+                            document.getElementById('delete-token').addEventListener('click', function() {
+                                showVerificationPopup('Are you sure you want to delete the current token?', deleteToken, userId);
+                            });
+            
+                        } else if (data.status === "NOT_FOUND") {
+                            tokenContentDiv.innerHTML = `
+                                <p>No token found. Click the button to generate a new auth token...</p>
+                            `;
+                            tokenContentDiv.className = 'alert alert-info';
+            
+                            tokenActionsDiv.innerHTML = `
+                                <button id="generate-token" class="btn btn-info">Generate Token</button>
+                            `;
+            
+                            document.getElementById('generate-token').addEventListener('click', function() {
+                                generateNewToken(userId);
+                            });
+                        } else {
+                            throw new Error('Unexpected response structure');
+                        }
+                    } catch (error) {
+                        console.error('Error fetching auth token:', error);
+                        document.getElementById("token-error").textContent = "An error occurred while fetching the auth token.";
+                    }
+                }
+            
+                function showVerificationPopup(message, callback, userId) {
+                    document.getElementById('verificationMessage').textContent = message;
+                    const confirmButton = document.getElementById('confirmButton');
+                    const handler = function() {
+                        callback(userId);
+                        confirmButton.removeEventListener('click', handler);
+                        $('#verificationModal').modal('hide');
+                    };
+                    confirmButton.addEventListener('click', handler);
+                    $('#verificationModal').modal('show');
+                }
+            
+                async function generateNewToken(userId) {
+                    const url = `http://127.0.0.1:8000/kobo/generate_auth_token/${userId}`;
+                    try {
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer your_token_here'  // Replace with your actual token if needed
+                            },
+                            body: JSON.stringify({})
+                        });
+            
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+            
+                        const data = await response.json();
+                        const authToken = data.data.auth_token;
+                        const warning = data.message;
+            
+                        const tokenContentDiv = document.getElementById("token-content");
+            
+                        if (!warning) {
+                            tokenContentDiv.innerHTML = `
+                                <p class="mb-2">Open the <code>.kobo/Kobo/Kobo eReader.conf</code> file in a text editor and add (or edit):</p>
+                                <p><code>api_endpoint=http://127.0.0.1:8000/kobo/top_level_endpoint?auth_token=${authToken}</code></p>
+                            `;
+                            tokenContentDiv.className = 'alert alert-success';
+                        } else {
+                            tokenContentDiv.innerHTML = `
+                                <p class="mb-2">${warning}</p>
+                                <p><strong>Kobo Token:</strong> ${authToken}</p>
+                            `;
+                            tokenContentDiv.className = 'alert alert-warning';
+                        }
+            
+                        await fetchCurrentToken(userId);
+            
+                    } catch (error) {
+                        console.error('Error generating new token:', error);
+                        document.getElementById("token-error").textContent = "An error occurred while generating a new auth token.";
+                    }
+                }
+            
+                async function deleteToken(userId) {
+                    const url = `http://127.0.0.1:8000/kobo/delete_auth_token/${userId}`;
+                    try {
+                        const response = await fetch(url, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer your_token_here'  // Replace with your actual token if needed
+                            },
+                            body: JSON.stringify({})
+                        });
+            
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+            
+                        await fetchCurrentToken(userId);
+                    } catch (error) {
+                        console.error('Error deleting token:', error);
+                        document.getElementById("token-error").textContent = "An error occurred while deleting the auth token.";
+                    }
+                }
+            </script>
+{% endblock %}

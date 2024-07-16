@@ -1,0 +1,59 @@
+<!-- Sidebar -->
+<nav id="sidebar" class="bg-dark position-fixed vh-100">
+    <div class="sidebar-sticky d-flex flex-column p-3">
+        <div class="mb-3">
+            <a href="/library" class="list-group-item list-group-item-action d-flex justify-content-center align-items-center py-3" title="Home">
+                <i class="fas fa-home fa-lg me-2"></i>
+                <span class="d-none">Home</span>
+            </a>
+        </div>
+        <div class="dropdown-divider"></div>
+
+        <div class="mb-3">
+            <a href="/shelves/" class="list-group-item list-group-item-action d-flex justify-content-center align-items-center py-3" title="Shelves">
+                <i class="fas fa-layer-group fa-lg me-2"></i>
+                <span class="d-none">Shelves</span>
+            </a>
+        </div>
+        <div class="dropdown-divider"></div>
+
+        <div class="mb-3">
+            <a href="/authors/" class="list-group-item list-group-item-action d-flex justify-content-center align-items-center py-3" title="Authors">
+                <i class="fas fa-solid fa-people-group"></i>
+                <span class="d-none">Authors</span>
+            </a>
+        </div>
+        <div class="dropdown-divider"></div>
+
+        <div class="mb-3">
+            <a href="/settings/" class="list-group-item list-group-item-action d-flex justify-content-center align-items-center py-3" title="Settings">
+                <i class="fas fa-cog fa-lg me-2"></i>
+                <span class="d-none">Settings</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+
+
+<!-- Bootstrap Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    // Adjust sidebar width based on icon size and padding
+    function adjustSidebarWidth() {
+        var iconWidth = $('.icon-container').outerWidth();
+        var iconPadding = 40; // Adjust padding as needed
+        var sidebarWidth = iconWidth + iconPadding;
+        $('#sidebar').css('width', sidebarWidth + 'px');
+    }
+
+    // Initial adjustment
+    adjustSidebarWidth();
+
+});
+</script>
