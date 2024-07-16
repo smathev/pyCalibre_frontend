@@ -12,14 +12,8 @@ SKELETON_LOADER_HTML = """
 </div>
 """
 
-# Google Metadata API key:
-GOOGLE_METADATA_API_KEY="AIzaSyA91ii_yeaGl6IBLCVi-H0NJZXc6eF7RwI"
 # Google METADATA URL
 GOOGLE_METADATA_BASE_URL="https://www.googleapis.com/books/v1/volumes"
-
-GOOGLE_API_KEY="AIzaSyA91ii_yeaGl6IBLCVi-H0NJZXc6eF7RwI"
-
-GOOGLE_CUSTOM_SEARCH_ENGINE_ID="84e5468253d704ed0"
 
 
 # Log level
